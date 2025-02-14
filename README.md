@@ -1,69 +1,73 @@
-# Welcome to your Lovable project
+# Colorful Timetable Builder
 
-## Project info
+An interactive timetable builder for university schedules with a modern and colorful interface.
 
-**URL**: https://lovable.dev/projects/f127e0c1-238a-47dc-8f57-8d0424aab7d3
+## Features
 
-## How can I edit this code?
+- Add, edit, and remove courses
+- Color-coded course types (lectures, labs, seminars)
+- Customizable time slots
+- Interactive grid interface
+- Modern and responsive design
 
-There are several ways of editing your application.
+## Getting Started
 
-**Use Lovable**
+### Prerequisites
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/f127e0c1-238a-47dc-8f57-8d0424aab7d3) and start prompting.
+- Node.js (v14 or higher)
+- npm or yarn
 
-Changes made via Lovable will be committed automatically to this repo.
+### Installation
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/colorful-timetable-builder.git
+cd colorful-timetable-builder
 ```
 
-**Edit a file directly in GitHub**
+2. Install dependencies:
+```bash
+npm install
+# or
+yarn install
+```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+3. Start the development server:
+```bash
+npm run dev
+# or
+yarn dev
+```
 
-**Use GitHub Codespaces**
+4. Open your browser and navigate to `http://localhost:3000`
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Usage
 
-## What technologies are used for this project?
+1. Click on any empty cell in the timetable to add a new course
+2. Fill in the course details in the modal form
+3. Click on existing courses to edit them
+4. The timetable automatically updates with your changes
 
-This project is built with .
+## Time Slots
 
-- Vite
-- TypeScript
+The timetable uses the following time slots:
+
+1. 08:30-09:50
+2. 10:00-11:20
+3. 11:30-12:50
+4. 13:20-14:40
+5. 14:50-16:10
+6. 16:20-17:40
+7. 18:00-19:20
+8. 19:30-20:50
+
+## Built With
+
 - React
-- shadcn-ui
-- Tailwind CSS
+- TypeScript
+- Styled Components
+- Vite
 
-## How can I deploy this project?
+## License
 
-Simply open [Lovable](https://lovable.dev/projects/f127e0c1-238a-47dc-8f57-8d0424aab7d3) and click on Share -> Publish.
-
-## I want to use a custom domain - is that possible?
-
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+This project is licensed under the MIT License. 
