@@ -13,7 +13,7 @@ import {
 import { Plus } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
-const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 const Index = () => {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -52,28 +52,31 @@ const Index = () => {
           </Button>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {coursesGroupedByDay.map(({ day, courses }) => (
+        <div className="grid grid-cols-6 gap-4">
+          {DAYS.map((day, dayIndex) => (
+            <div key={day} className="font-semibold text-gray-900 p-2 bg-white rounded-lg shadow-sm text-center">
+              {day}
+            </div>
+          ))}
+          
+          {DAYS.map((day, dayIndex) => (
             <div
-              key={day}
-              className="bg-white p-6 rounded-lg shadow-sm space-y-4 animate-fadeIn"
+              key={`content-${day}`}
+              className="min-h-[600px] bg-white p-4 rounded-lg shadow-sm space-y-3"
             >
-              <h2 className="text-lg font-semibold text-gray-900">{day}</h2>
-              <div className="space-y-3">
-                {courses.length === 0 ? (
-                  <p className="text-gray-500 text-sm">No courses scheduled</p>
-                ) : (
-                  courses
-                    .sort(
-                      (a, b) =>
-                        new Date(`1970/01/01 ${a.startTime}`).getTime() -
-                        new Date(`1970/01/01 ${b.startTime}`).getTime()
-                    )
-                    .map((course) => (
-                      <CourseBlock key={course.id} course={course} />
-                    ))
-                )}
-              </div>
+              {coursesGroupedByDay[dayIndex].courses.length === 0 ? (
+                <p className="text-gray-500 text-sm text-center">No courses scheduled</p>
+              ) : (
+                coursesGroupedByDay[dayIndex].courses
+                  .sort(
+                    (a, b) =>
+                      new Date(`1970/01/01 ${a.startTime}`).getTime() -
+                      new Date(`1970/01/01 ${b.startTime}`).getTime()
+                  )
+                  .map((course) => (
+                    <CourseBlock key={course.id} course={course} />
+                  ))
+              )}
             </div>
           ))}
         </div>
