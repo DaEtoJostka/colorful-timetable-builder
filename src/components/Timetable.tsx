@@ -39,10 +39,44 @@ const TimeCell = styled.div`
   text-align: center;
   font-size: 0.9em;
   color: #666;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  .start-time {
+    font-weight: bold;
+    margin-bottom: 2px;
+  }
+
+  .end-time {
+    font-size: 0.9em;
+  }
+`;
+
+const CoursesContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 5px;
+  background: #fff;
+  min-height: 100px;
+  position: relative;
+  transition: padding-bottom 0.2s ease-in-out;
+
+  &:hover {
+    background: #f8f8f8;
+    padding-bottom: 40px;
+  }
+
+  &:hover .add-button {
+    opacity: 1;
+    visibility: visible;
+  }
 `;
 
 const CourseCell = styled.div<{ type: string }>`
-  padding: 10px;
+  padding: 8px;
   background: ${props => 
     props.type === 'lecture' ? '#ffebee' :
     props.type === 'lab' ? '#e3f2fd' :
@@ -51,10 +85,11 @@ const CourseCell = styled.div<{ type: string }>`
     props.type === 'lecture' ? '#ef5350' :
     props.type === 'lab' ? '#2196f3' :
     '#ab47bc'};
-  margin: 5px;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s;
+  font-size: 0.9em;
+  z-index: 1;
 
   &:hover {
     transform: scale(1.02);
@@ -62,14 +97,25 @@ const CourseCell = styled.div<{ type: string }>`
   }
 `;
 
-const EmptyCell = styled.div`
-  padding: 10px;
-  background: #fff;
-  min-height: 100px;
+const AddButton = styled.button`
+  padding: 4px 8px;
+  background: #e0e0e0;
+  border: none;
+  border-radius: 4px;
   cursor: pointer;
+  font-size: 0.8em;
+  color: #666;
+  width: calc(100% - 10px);
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+  z-index: 0;
 
   &:hover {
-    background: #f8f8f8;
+    background: #d0d0d0;
   }
 `;
 
@@ -86,8 +132,8 @@ export const Timetable: React.FC<TimetableProps> = ({
   onAddCourse,
   onEditCourse,
 }) => {
-  const getCourseForSlot = (timeSlot: TimeSlot, dayIndex: number) => {
-    return courses.find(
+  const getCoursesForSlot = (timeSlot: TimeSlot, dayIndex: number) => {
+    return courses.filter(
       course => 
         course.startTime === timeSlot.startTime &&
         course.dayOfWeek === dayIndex
@@ -106,27 +152,36 @@ export const Timetable: React.FC<TimetableProps> = ({
       {DEFAULT_TIME_SLOTS.map((timeSlot) => (
         <TimeSlotRow key={timeSlot.id}>
           <TimeCell>
-            {timeSlot.startTime}-{timeSlot.endTime}
+            <span className="start-time">{timeSlot.startTime}</span>
+            <span className="end-time">{timeSlot.endTime}</span>
           </TimeCell>
           {days.map((_, dayIndex) => {
-            const course = getCourseForSlot(timeSlot, dayIndex);
-            return course ? (
-              <CourseCell
-                key={dayIndex}
-                type={course.type}
-                onClick={() => onEditCourse?.(course)}
-              >
-                <div>{course.title}</div>
-                <div style={{ fontSize: '0.8em' }}>{course.location}</div>
-                {course.professor && (
-                  <div style={{ fontSize: '0.8em' }}>{course.professor}</div>
-                )}
-              </CourseCell>
-            ) : (
-              <EmptyCell
-                key={dayIndex}
-                onClick={() => onAddCourse?.(timeSlot, dayIndex)}
-              />
+            const slotCourses = getCoursesForSlot(timeSlot, dayIndex);
+            return (
+              <CoursesContainer key={dayIndex}>
+                {slotCourses.map(course => (
+                  <CourseCell
+                    key={course.id}
+                    type={course.type}
+                    onClick={() => onEditCourse?.(course)}
+                  >
+                    <div>{course.title}</div>
+                    <div style={{ fontSize: '0.8em' }}>{course.location}</div>
+                    {course.professor && (
+                      <div style={{ fontSize: '0.8em' }}>{course.professor}</div>
+                    )}
+                  </CourseCell>
+                ))}
+                <AddButton 
+                  className="add-button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onAddCourse?.(timeSlot, dayIndex);
+                  }}
+                >
+                  + Добавить занятие
+                </AddButton>
+              </CoursesContainer>
             );
           })}
         </TimeSlotRow>
