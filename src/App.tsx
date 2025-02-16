@@ -76,6 +76,16 @@ export const App: React.FC = () => {
     setSelectedCourse(undefined);
   };
 
+  const handleMoveCourse = (course: Course, newTimeSlot: TimeSlot, newDayIndex: number) => {
+    setCourses(prev =>
+      prev.map(c =>
+        c.id === course.id
+          ? { ...c, startTime: newTimeSlot.startTime, endTime: newTimeSlot.endTime, dayOfWeek: newDayIndex }
+          : c
+      )
+    );
+  };
+
   return (
     <AppContainer>
       <h1 style={{ marginBottom: '20px', fontSize: '24px', fontWeight: 'bold' }}>
@@ -86,6 +96,7 @@ export const App: React.FC = () => {
         courses={courses}
         onAddCourse={handleAddCourse}
         onEditCourse={handleEditCourse}
+        onMoveCourse={handleMoveCourse}
       />
 
       {isModalOpen && (

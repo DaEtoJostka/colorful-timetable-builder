@@ -1,46 +1,69 @@
+import React from 'react';
+import { useDrag } from 'react-dnd';
+import styled from 'styled-components';
+import { Course } from '../types/course';
 
-import { Course } from "@/types/course";
-import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+const CourseWrapper = styled.div<{ type: string; isDragging: boolean }>`
+  padding: 8px;
+  background: ${props => 
+    props.type === 'lecture' ? '#ffebee' :
+    props.type === 'lab' ? '#e3f2fd' :
+    '#f3e5f5'};
+  border-left: 4px solid ${props =>
+    props.type === 'lecture' ? '#ef5350' :
+    props.type === 'lab' ? '#2196f3' :
+    '#ab47bc'};
+  border-radius: 4px;
+  cursor: move;
+  transition: all 0.2s;
+  font-size: 0.9em;
+  z-index: 1;
+  opacity: ${props => props.isDragging ? 0.5 : 1};
+
+  &:hover {
+    transform: scale(1.02);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+`;
+
+const CourseTitle = styled.div`
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: #333;
+`;
+
+const CourseInfo = styled.div`
+  font-size: 0.85em;
+  color: #666;
+`;
 
 interface CourseBlockProps {
   course: Course;
-  onClick?: () => void;
+  onEdit?: (course: Course) => void;
 }
 
-const typeColors = {
-  lecture: "bg-[#E5DEFF]",
-  lab: "bg-[#FDE1D3]",
-  seminar: "bg-[#D3E4FD]",
-};
+export const CourseBlock: React.FC<CourseBlockProps> = ({ course, onEdit }) => {
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: 'COURSE',
+    item: course,
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  }));
 
-const CourseBlock = ({ course, onClick }: CourseBlockProps) => {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className={cn(
-        "p-4 rounded-lg shadow-sm transition-all duration-200 hover:shadow-md cursor-pointer",
-        typeColors[course.type]
-      )}
-      onClick={onClick}
+    <CourseWrapper
+      ref={drag}
+      type={course.type}
+      isDragging={isDragging}
+      onClick={() => onEdit?.(course)}
     >
-      <div className="flex flex-col space-y-1">
-        <div className="text-xs font-medium uppercase tracking-wide text-gray-500">
-          {course.type}
-        </div>
-        <h3 className="font-medium text-gray-900">{course.title}</h3>
-        <div className="text-sm text-gray-600">
-          {course.startTime} - {course.endTime}
-        </div>
-        <div className="text-sm text-gray-600">{course.location}</div>
-        {course.professor && (
-          <div className="text-sm text-gray-600">{course.professor}</div>
-        )}
-      </div>
-    </motion.div>
+      <CourseTitle>{course.title}</CourseTitle>
+      <CourseInfo>{course.location}</CourseInfo>
+      {course.professor && (
+        <CourseInfo>{course.professor}</CourseInfo>
+      )}
+    </CourseWrapper>
   );
 };
-
-export default CourseBlock;

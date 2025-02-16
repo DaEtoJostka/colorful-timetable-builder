@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { DndProvider, useDrop } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Course } from '../types/course';
 import { TimeSlot, DEFAULT_TIME_SLOTS } from '../types/timeSlots';
 import styled from 'styled-components';
+import { CourseBlock } from './CourseBlock';
 
 const TimetableContainer = styled.div`
   display: flex;
@@ -73,6 +76,10 @@ const CoursesContainer = styled.div`
     opacity: 1;
     visibility: visible;
   }
+
+  &.can-drop {
+    background: #e3f2fd;
+  }
 `;
 
 const CourseCell = styled.div<{ type: string }>`
@@ -121,16 +128,43 @@ const AddButton = styled.button`
 
 const days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
 
+interface DropTargetProps {
+  timeSlot: TimeSlot;
+  dayIndex: number;
+  children: React.ReactNode;
+  onMoveCourse: (course: Course, newTimeSlot: TimeSlot, newDayIndex: number) => void;
+}
+
+const DropTarget: React.FC<DropTargetProps> = ({ timeSlot, dayIndex, children, onMoveCourse }) => {
+  const [{ isOver }, drop] = useDrop(() => ({
+    accept: 'COURSE',
+    drop: (item: Course) => {
+      onMoveCourse(item, timeSlot, dayIndex);
+    },
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+    }),
+  }));
+
+  return (
+    <CoursesContainer ref={drop} className={isOver ? 'can-drop' : ''}>
+      {children}
+    </CoursesContainer>
+  );
+};
+
 interface TimetableProps {
   courses: Course[];
   onAddCourse?: (timeSlot: TimeSlot, dayIndex: number) => void;
   onEditCourse?: (course: Course) => void;
+  onMoveCourse?: (course: Course, newTimeSlot: TimeSlot, newDayIndex: number) => void;
 }
 
 export const Timetable: React.FC<TimetableProps> = ({
   courses,
   onAddCourse,
   onEditCourse,
+  onMoveCourse,
 }) => {
   const getCoursesForSlot = (timeSlot: TimeSlot, dayIndex: number) => {
     return courses.filter(
@@ -141,51 +175,52 @@ export const Timetable: React.FC<TimetableProps> = ({
   };
 
   return (
-    <TimetableContainer>
-      <Header>
-        <HeaderCell>Время</HeaderCell>
-        {days.map((day, index) => (
-          <HeaderCell key={day}>{day}</HeaderCell>
-        ))}
-      </Header>
+    <DndProvider backend={HTML5Backend}>
+      <TimetableContainer>
+        <Header>
+          <HeaderCell>Время</HeaderCell>
+          {days.map((day, index) => (
+            <HeaderCell key={day}>{day}</HeaderCell>
+          ))}
+        </Header>
 
-      {DEFAULT_TIME_SLOTS.map((timeSlot) => (
-        <TimeSlotRow key={timeSlot.id}>
-          <TimeCell>
-            <span className="start-time">{timeSlot.startTime}</span>
-            <span className="end-time">{timeSlot.endTime}</span>
-          </TimeCell>
-          {days.map((_, dayIndex) => {
-            const slotCourses = getCoursesForSlot(timeSlot, dayIndex);
-            return (
-              <CoursesContainer key={dayIndex}>
-                {slotCourses.map(course => (
-                  <CourseCell
-                    key={course.id}
-                    type={course.type}
-                    onClick={() => onEditCourse?.(course)}
-                  >
-                    <div>{course.title}</div>
-                    <div style={{ fontSize: '0.8em' }}>{course.location}</div>
-                    {course.professor && (
-                      <div style={{ fontSize: '0.8em' }}>{course.professor}</div>
-                    )}
-                  </CourseCell>
-                ))}
-                <AddButton 
-                  className="add-button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onAddCourse?.(timeSlot, dayIndex);
-                  }}
+        {DEFAULT_TIME_SLOTS.map((timeSlot) => (
+          <TimeSlotRow key={timeSlot.id}>
+            <TimeCell>
+              <span className="start-time">{timeSlot.startTime}</span>
+              <span className="end-time">{timeSlot.endTime}</span>
+            </TimeCell>
+            {days.map((_, dayIndex) => {
+              const slotCourses = getCoursesForSlot(timeSlot, dayIndex);
+              return (
+                <DropTarget
+                  key={dayIndex}
+                  timeSlot={timeSlot}
+                  dayIndex={dayIndex}
+                  onMoveCourse={onMoveCourse!}
                 >
-                  + Добавить занятие
-                </AddButton>
-              </CoursesContainer>
-            );
-          })}
-        </TimeSlotRow>
-      ))}
-    </TimetableContainer>
+                  {slotCourses.map(course => (
+                    <CourseBlock
+                      key={course.id}
+                      course={course}
+                      onEdit={onEditCourse}
+                    />
+                  ))}
+                  <AddButton 
+                    className="add-button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onAddCourse?.(timeSlot, dayIndex);
+                    }}
+                  >
+                    + Добавить занятие
+                  </AddButton>
+                </DropTarget>
+              );
+            })}
+          </TimeSlotRow>
+        ))}
+      </TimetableContainer>
+    </DndProvider>
   );
 }; 
