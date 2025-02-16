@@ -50,6 +50,8 @@ export const App: React.FC = () => {
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<TimeSlot | undefined>();
   const [selectedDayIndex, setSelectedDayIndex] = useState<number | undefined>();
   const [selectedCourse, setSelectedCourse] = useState<Course | undefined>();
+  const [editingTemplateId, setEditingTemplateId] = useState<string | null>(null);
+  const [editedTemplateName, setEditedTemplateName] = useState('');
 
   const currentCourses = templates.find(t => t.id === currentTemplateId)?.courses || [];
 
@@ -131,6 +133,25 @@ export const App: React.FC = () => {
     }));
   };
 
+  const startEditingTemplate = (templateId: string) => {
+    const template = templates.find(t => t.id === templateId);
+    if (template) {
+      setEditingTemplateId(templateId);
+      setEditedTemplateName(template.name);
+    }
+  };
+
+  const saveTemplateName = () => {
+    if (!editedTemplateName.trim()) return;
+    
+    setTemplates(prev => prev.map(template => 
+      template.id === editingTemplateId 
+        ? { ...template, name: editedTemplateName.trim() }
+        : template
+    ));
+    setEditingTemplateId(null);
+  };
+
   return (
     <AppContainer>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -138,17 +159,60 @@ export const App: React.FC = () => {
           Расписание занятий
         </h1>
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-          <select 
-            value={currentTemplateId} 
-            onChange={handleTemplateChange}
-            style={{ padding: '8px 12px', borderRadius: '4px', border: '1px solid #ddd' }}
+          <div style={{ position: 'relative' }}>
+            <select 
+              value={currentTemplateId} 
+              onChange={handleTemplateChange}
+              style={{ 
+                padding: '8px 30px 8px 12px',
+                borderRadius: '4px',
+                border: '1px solid #ddd',
+                minWidth: '200px',
+                appearance: 'none'
+              }}
+            >
+              {templates.map(template => (
+                <option key={template.id} value={template.id}>
+                  {template.name}
+                </option>
+              ))}
+            </select>
+            {editingTemplateId === currentTemplateId ? (
+              <input
+                value={editedTemplateName}
+                onChange={(e) => setEditedTemplateName(e.target.value)}
+                onBlur={saveTemplateName}
+                onKeyPress={(e) => e.key === 'Enter' && saveTemplateName()}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  padding: '8px 12px',
+                  border: '2px solid #2196f3',
+                  borderRadius: '4px',
+                  boxSizing: 'border-box'
+                }}
+                autoFocus
+              />
+            ) : null}
+          </div>
+
+          <button 
+            onClick={() => startEditingTemplate(currentTemplateId)}
+            style={{
+              padding: '8px 12px',
+              background: '#2196f3',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
           >
-            {templates.map(template => (
-              <option key={template.id} value={template.id}>
-                {template.name}
-              </option>
-            ))}
-          </select>
+            Переименовать
+          </button>
+          
           <button 
             onClick={createNewTemplate}
             style={{
@@ -162,6 +226,7 @@ export const App: React.FC = () => {
           >
             Новый шаблон
           </button>
+          
           {templates.length > 1 && (
             <button
               onClick={deleteCurrentTemplate}
