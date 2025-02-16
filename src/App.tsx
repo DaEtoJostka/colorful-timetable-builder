@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Course } from './types/course';
 import { TimeSlot } from './types/timeSlots';
 import { Timetable } from './components/Timetable';
 import { CourseForm } from './components/CourseForm';
 import styled from 'styled-components';
+import { ScheduleTemplate } from './types/course';
+import { v4 as uuidv4 } from 'uuid';
 
 const AppContainer = styled.div`
   max-width: 1400px;
@@ -35,11 +37,25 @@ const ModalContent = styled.div`
 `;
 
 export const App: React.FC = () => {
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [templates, setTemplates] = useState<ScheduleTemplate[]>(() => {
+    const saved = localStorage.getItem('scheduleTemplates');
+    return saved ? JSON.parse(saved) : [{
+      id: 'default',
+      name: 'Основное расписание',
+      courses: []
+    }];
+  });
+  const [currentTemplateId, setCurrentTemplateId] = useState<string>('default');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<TimeSlot | undefined>();
   const [selectedDayIndex, setSelectedDayIndex] = useState<number | undefined>();
   const [selectedCourse, setSelectedCourse] = useState<Course | undefined>();
+
+  const currentCourses = templates.find(t => t.id === currentTemplateId)?.courses || [];
+
+  useEffect(() => {
+    localStorage.setItem('scheduleTemplates', JSON.stringify(templates));
+  }, [templates]);
 
   const handleAddCourse = (timeSlot: TimeSlot, dayIndex: number) => {
     setSelectedTimeSlot(timeSlot);
@@ -54,13 +70,15 @@ export const App: React.FC = () => {
   };
 
   const handleSubmit = (course: Course) => {
-    if (selectedCourse) {
-      setCourses(prev =>
-        prev.map(c => (c.id === selectedCourse.id ? course : c))
-      );
-    } else {
-      setCourses(prev => [...prev, course]);
-    }
+    setTemplates(prev => prev.map(template => {
+      if (template.id === currentTemplateId) {
+        const courses = selectedCourse
+          ? template.courses.map(c => c.id === selectedCourse.id ? course : c)
+          : [...template.courses, course];
+        return { ...template, courses };
+      }
+      return template;
+    }));
     setIsModalOpen(false);
     resetModal();
   };
@@ -76,24 +94,95 @@ export const App: React.FC = () => {
     setSelectedCourse(undefined);
   };
 
+  const createNewTemplate = () => {
+    const newTemplate: ScheduleTemplate = {
+      id: uuidv4(),
+      name: `Новый шаблон (${templates.length + 1})`,
+      courses: []
+    };
+    setTemplates(prev => [...prev, newTemplate]);
+    setCurrentTemplateId(newTemplate.id);
+  };
+
+  const deleteCurrentTemplate = () => {
+    if (templates.length > 1) {
+      setTemplates(prev => prev.filter(t => t.id !== currentTemplateId));
+      setCurrentTemplateId(templates[0].id);
+    }
+  };
+
+  const handleTemplateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setCurrentTemplateId(e.target.value);
+  };
+
   const handleMoveCourse = (course: Course, newTimeSlot: TimeSlot, newDayIndex: number) => {
-    setCourses(prev =>
-      prev.map(c =>
-        c.id === course.id
-          ? { ...c, startTime: newTimeSlot.startTime, endTime: newTimeSlot.endTime, dayOfWeek: newDayIndex }
-          : c
-      )
-    );
+    setTemplates(prev => prev.map(template => {
+      if (template.id === currentTemplateId) {
+        return {
+          ...template,
+          courses: template.courses.map(c =>
+            c.id === course.id
+              ? { ...c, startTime: newTimeSlot.startTime, endTime: newTimeSlot.endTime, dayOfWeek: newDayIndex }
+              : c
+          )
+        };
+      }
+      return template;
+    }));
   };
 
   return (
     <AppContainer>
-      <h1 style={{ marginBottom: '20px', fontSize: '24px', fontWeight: 'bold' }}>
-        Расписание занятий
-      </h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <h1 style={{ fontSize: '24px', fontWeight: 'bold', margin: 0 }}>
+          Расписание занятий
+        </h1>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <select 
+            value={currentTemplateId} 
+            onChange={handleTemplateChange}
+            style={{ padding: '8px 12px', borderRadius: '4px', border: '1px solid #ddd' }}
+          >
+            {templates.map(template => (
+              <option key={template.id} value={template.id}>
+                {template.name}
+              </option>
+            ))}
+          </select>
+          <button 
+            onClick={createNewTemplate}
+            style={{
+              padding: '8px 12px',
+              background: '#4CAF50',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            Новый шаблон
+          </button>
+          {templates.length > 1 && (
+            <button
+              onClick={deleteCurrentTemplate}
+              style={{
+                padding: '8px 12px',
+                background: '#f44336',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer'
+              }}
+            >
+              Удалить шаблон
+            </button>
+          )}
+        </div>
+      </div>
       
       <Timetable
-        courses={courses}
+        key={currentTemplateId}
+        courses={currentCourses}
         onAddCourse={handleAddCourse}
         onEditCourse={handleEditCourse}
         onMoveCourse={handleMoveCourse}

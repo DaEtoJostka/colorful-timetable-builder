@@ -1,4 +1,3 @@
-
 export type CourseType = 'lecture' | 'lab' | 'seminar';
 
 export interface Course {
@@ -10,4 +9,10 @@ export interface Course {
   location: string;
   dayOfWeek: number;
   professor?: string;
+}
+
+export interface ScheduleTemplate {
+  id: string;
+  name: string;
+  courses: Course[];
 }

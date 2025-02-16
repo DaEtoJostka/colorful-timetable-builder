@@ -108,7 +108,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit({
-      id: course?.id || Math.random().toString(36).substr(2, 9),
+      id: course?.id || Date.now().toString() + Math.random().toString(36).substr(2, 9),
       ...formData as Course,
     });
   };
