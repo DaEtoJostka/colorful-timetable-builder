@@ -6,6 +6,7 @@ import { CourseForm } from './components/CourseForm';
 import styled from 'styled-components';
 import { ScheduleTemplate } from './types/course';
 import { v4 as uuidv4 } from 'uuid';
+import { MdEdit, MdAdd, MdDelete } from 'react-icons/md';
 
 const AppContainer = styled.div`
   max-width: 1400px;
@@ -34,6 +35,66 @@ const ModalContent = styled.div`
   max-width: 500px;
   max-height: 90vh;
   overflow-y: auto;
+`;
+
+const ActionButton = styled.button<{ variant: 'primary' | 'success' | 'danger' }>`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: ${props => 
+    props.variant === 'primary' ? '#2196f3' :
+    props.variant === 'success' ? '#4CAF50' :
+    '#f44336'};
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    background: ${props => 
+      props.variant === 'primary' ? '#1976d2' :
+      props.variant === 'success' ? '#388E3C' :
+      '#d32f2f'};
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  svg {
+    font-size: 18px;
+  }
+`;
+
+const TemplateSelect = styled.select`
+  padding: 8px 30px 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  min-width: 200px;
+  appearance: none;
+  background: white;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+  &:hover {
+    border-color: #2196f3;
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.1);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: #2196f3;
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+  }
 `;
 
 export const App: React.FC = () => {
@@ -158,25 +219,18 @@ export const App: React.FC = () => {
         <h1 style={{ fontSize: '24px', fontWeight: 'bold', margin: 0 }}>
           Расписание занятий
         </h1>
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
           <div style={{ position: 'relative' }}>
-            <select 
+            <TemplateSelect 
               value={currentTemplateId} 
               onChange={handleTemplateChange}
-              style={{ 
-                padding: '8px 30px 8px 12px',
-                borderRadius: '4px',
-                border: '1px solid #ddd',
-                minWidth: '200px',
-                appearance: 'none'
-              }}
             >
               {templates.map(template => (
                 <option key={template.id} value={template.id}>
                   {template.name}
                 </option>
               ))}
-            </select>
+            </TemplateSelect>
             {editingTemplateId === currentTemplateId ? (
               <input
                 value={editedTemplateName}
@@ -191,7 +245,7 @@ export const App: React.FC = () => {
                   height: '100%',
                   padding: '8px 12px',
                   border: '2px solid #2196f3',
-                  borderRadius: '4px',
+                  borderRadius: '8px',
                   boxSizing: 'border-box'
                 }}
                 autoFocus
@@ -199,48 +253,27 @@ export const App: React.FC = () => {
             ) : null}
           </div>
 
-          <button 
+          <ActionButton 
+            variant="primary"
             onClick={() => startEditingTemplate(currentTemplateId)}
-            style={{
-              padding: '8px 12px',
-              background: '#2196f3',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
           >
-            Переименовать
-          </button>
+            <MdEdit /> Переименовать
+          </ActionButton>
           
-          <button 
+          <ActionButton 
+            variant="success"
             onClick={createNewTemplate}
-            style={{
-              padding: '8px 12px',
-              background: '#4CAF50',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
           >
-            Новый шаблон
-          </button>
+            <MdAdd /> Новый шаблон
+          </ActionButton>
           
           {templates.length > 1 && (
-            <button
+            <ActionButton
+              variant="danger"
               onClick={deleteCurrentTemplate}
-              style={{
-                padding: '8px 12px',
-                background: '#f44336',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
             >
-              Удалить шаблон
-            </button>
+              <MdDelete /> Удалить шаблон
+            </ActionButton>
           )}
         </div>
       </div>
