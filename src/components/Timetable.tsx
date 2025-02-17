@@ -89,10 +89,12 @@ const CourseCell = styled.div<{ type: string }>`
   background: ${props => 
     props.type === 'lecture' ? '#ffebee' :
     props.type === 'lab' ? '#e3f2fd' :
+    props.type === 'exam' ? '#fff3e0' :
     '#f3e5f5'};
   border-left: 4px solid ${props =>
     props.type === 'lecture' ? '#ef5350' :
     props.type === 'lab' ? '#2196f3' :
+    props.type === 'exam' ? '#ff9800' :
     '#ab47bc'};
   border-radius: 4px;
   cursor: pointer;
