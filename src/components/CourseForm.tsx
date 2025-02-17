@@ -162,6 +162,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({
           >
             <option value="lecture">Лекция</option>
             <option value="lab">Лабораторная</option>
+            <option value="practice">Практика</option>
             <option value="seminar">Семинар</option>
             <option value="exam">Экзамен</option>
           </Select>

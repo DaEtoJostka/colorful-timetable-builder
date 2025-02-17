@@ -1,4 +1,4 @@
-export type CourseType = 'lecture' | 'lab' | 'seminar' | 'exam';
+export type CourseType = 'lecture' | 'lab' | 'seminar' | 'exam' | 'practice';
 
 export interface Course {
   id: string;
