@@ -50,10 +50,12 @@ const TimeCell = styled.div`
   .start-time {
     font-weight: bold;
     margin-bottom: 2px;
+    color: #333;
   }
 
   .end-time {
     font-size: 0.9em;
+    color: #666;
   }
 `;
 
