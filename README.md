@@ -1,25 +1,33 @@
 # Colorful Timetable Builder
 
+[English Version](#english-version) | [Русская версия](#русская-версия)
+
+## English Version
+
 An interactive timetable builder for university schedules with a modern and colorful interface.
 
 ## Features
 
-- Add, edit, and remove courses
-- Color-coded course types (lectures, labs, seminars)
-- Customizable time slots
-- Interactive grid interface
-- Modern and responsive design
+-   Add, edit, and remove courses.
+-   Color-coded course types (lectures, labs, seminars, exams, practices).
+-   Customizable time slots.
+-   Interactive grid interface.
+-   Modern and responsive design.
+-   Multiple schedule templates.
+-   Drag and Drop functionality for courses.
+-   Template renaming and deletion.
+-   Data persistence using LocalStorage.
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js (v14 or higher)
-- npm or yarn
+-   Node.js (v14 or higher)
+-   npm or yarn
 
 ### Installation
 
-1. Clone the repository:
+1.  Clone the repository:
 ```bash
 git clone https://github.com/yourusername/colorful-timetable-builder.git
 cd colorful-timetable-builder
