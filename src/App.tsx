@@ -97,28 +97,99 @@ const TemplateSelect = styled.select`
   }
 `;
 
+const SaveNotification = styled.div`
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #4CAF50;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.3s ease-out;
+
+  @keyframes slideIn {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+`;
+
 export const App: React.FC = () => {
   const [templates, setTemplates] = useState<ScheduleTemplate[]>(() => {
-    const saved = localStorage.getItem('scheduleTemplates');
-    return saved ? JSON.parse(saved) : [{
-      id: 'default',
-      name: 'Основное расписание',
-      courses: []
-    }];
+    try {
+      const savedData = localStorage.getItem('scheduleData');
+      if (savedData) {
+        const { templates } = JSON.parse(savedData);
+        return templates.length ? templates : [{
+          id: 'default',
+          name: 'Основное расписание',
+          courses: []
+        }];
+      }
+      // Для обратной совместимости с предыдущей версией
+      const oldTemplates = localStorage.getItem('scheduleTemplates');
+      return oldTemplates ? JSON.parse(oldTemplates) : [{
+        id: 'default',
+        name: 'Основное расписание',
+        courses: []
+      }];
+    } catch (error) {
+      console.error('Ошибка загрузки из localStorage:', error);
+      return [{
+        id: 'default',
+        name: 'Основное расписание',
+        courses: []
+      }];
+    }
   });
-  const [currentTemplateId, setCurrentTemplateId] = useState<string>('default');
+  const [currentTemplateId, setCurrentTemplateId] = useState<string>(() => {
+    try {
+      const savedData = localStorage.getItem('scheduleData');
+      return savedData ? JSON.parse(savedData).currentTemplateId : 'default';
+    } catch (error) {
+      console.error('Ошибка загрузки текущего шаблона:', error);
+      return 'default';
+    }
+  });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<TimeSlot | undefined>();
   const [selectedDayIndex, setSelectedDayIndex] = useState<number | undefined>();
   const [selectedCourse, setSelectedCourse] = useState<Course | undefined>();
   const [editingTemplateId, setEditingTemplateId] = useState<string | null>(null);
   const [editedTemplateName, setEditedTemplateName] = useState('');
+  const [showSaveNotification, setShowSaveNotification] = useState(false);
 
   const currentCourses = templates.find(t => t.id === currentTemplateId)?.courses || [];
 
   useEffect(() => {
-    localStorage.setItem('scheduleTemplates', JSON.stringify(templates));
-  }, [templates]);
+    const saveData = {
+      templates,
+      currentTemplateId
+    };
+
+    try {
+      localStorage.setItem('scheduleData', JSON.stringify(saveData));
+      setShowSaveNotification(true);
+    } catch (error) {
+      console.error('Ошибка сохранения в localStorage:', error);
+      alert('Не удалось сохранить данные. Возможно, недостаточно места в хранилище.');
+    }
+  }, [templates, currentTemplateId]);
+
+  useEffect(() => {
+    if (showSaveNotification) {
+      const timer = setTimeout(() => {
+        setShowSaveNotification(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [showSaveNotification]);
 
   const handleAddCourse = (timeSlot: TimeSlot, dayIndex: number) => {
     setSelectedTimeSlot(timeSlot);
@@ -298,6 +369,12 @@ export const App: React.FC = () => {
             />
           </ModalContent>
         </Modal>
+      )}
+
+      {showSaveNotification && (
+        <SaveNotification>
+          Изменения сохранены ✓
+        </SaveNotification>
       )}
     </AppContainer>
   );
