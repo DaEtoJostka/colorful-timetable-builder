@@ -71,12 +71,29 @@ const Button = styled.button`
   }
 `;
 
+const DeleteButton = styled.button`
+  padding: 10px 20px;
+  background: #fff;
+  color: #f44336;
+  border: 1px solid #f44336;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+  margin-left: auto;
+
+  &:hover {
+    background: #ffebee;
+  }
+`;
+
 interface CourseFormProps {
   timeSlot?: TimeSlot;
   dayIndex?: number;
   course?: Course;
   onSubmit: (course: Course) => void;
   onCancel: () => void;
+  onDelete?: () => void;
 }
 
 export const CourseForm: React.FC<CourseFormProps> = ({
@@ -85,6 +102,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({
   course,
   onSubmit,
   onCancel,
+  onDelete,
 }) => {
   const [formData, setFormData] = useState<Partial<Course>>({
     title: '',
@@ -167,13 +185,18 @@ export const CourseForm: React.FC<CourseFormProps> = ({
           />
         </FormGroup>
 
-        <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+        <div style={{ display: 'flex', gap: '10px', marginTop: '10px', alignItems: 'center' }}>
           <Button type="submit">
             {course ? 'Сохранить' : 'Добавить'}
           </Button>
-          <Button type="button" onClick={onCancel} style={{ background: '#f44336' }}>
+          <Button type="button" onClick={onCancel} style={{ background: '#f5f5f5', color: '#666', border: '1px solid #ddd' }}>
             Отмена
           </Button>
+          {course && (
+            <DeleteButton type="button" onClick={onDelete}>
+              Удалить занятие
+            </DeleteButton>
+          )}
         </div>
       </Form>
     </FormContainer>

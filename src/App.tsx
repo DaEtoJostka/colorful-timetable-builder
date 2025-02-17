@@ -42,35 +42,40 @@ const ActionButton = styled.button<{ variant: 'primary' | 'success' | 'danger' }
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  background: ${props => 
+  background: ${props => props.variant === 'danger' ? '#fff' : '#f8f9fa'};
+  color: ${props => 
     props.variant === 'primary' ? '#2196f3' :
     props.variant === 'success' ? '#4CAF50' :
     '#f44336'};
-  color: white;
-  border: none;
+  border: 1px solid;
+  border-color: ${props => 
+    props.variant === 'primary' ? '#2196f3' :
+    props.variant === 'success' ? '#4CAF50' :
+    '#f44336'};
   border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 
   &:hover {
     background: ${props => 
-      props.variant === 'primary' ? '#1976d2' :
-      props.variant === 'success' ? '#388E3C' :
-      '#d32f2f'};
+      props.variant === 'primary' ? '#e3f2fd' :
+      props.variant === 'success' ? '#e8f5e9' :
+      '#ffebee'};
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
 
   &:active {
     transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   }
 
   svg {
     font-size: 18px;
+    color: inherit;
   }
 `;
 
@@ -284,6 +289,20 @@ export const App: React.FC = () => {
     setEditingTemplateId(null);
   };
 
+  const handleDeleteCourse = (courseId: string) => {
+    setTemplates(prev => prev.map(template => {
+      if (template.id === currentTemplateId) {
+        return {
+          ...template,
+          courses: template.courses.filter(c => c.id !== courseId)
+        };
+      }
+      return template;
+    }));
+    setIsModalOpen(false);
+    resetModal();
+  };
+
   return (
     <AppContainer>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -366,6 +385,7 @@ export const App: React.FC = () => {
               course={selectedCourse}
               onSubmit={handleSubmit}
               onCancel={handleCancel}
+              onDelete={selectedCourse ? () => handleDeleteCourse(selectedCourse.id) : undefined}
             />
           </ModalContent>
         </Modal>
