@@ -7,6 +7,8 @@ import styled from 'styled-components';
 import { ScheduleTemplate } from './types/course';
 import { v4 as uuidv4 } from 'uuid';
 import { MdEdit, MdAdd, MdDelete } from 'react-icons/md';
+import { SelectNative } from './components/ui/select-native';
+import { Label } from './components/ui/label';
 
 const AppContainer = styled.div`
   max-width: 1400px;
@@ -40,8 +42,9 @@ const ModalContent = styled.div`
 const ActionButton = styled.button<{ variant: 'primary' | 'success' | 'danger' }>`
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
+  gap: 10px;
+  padding: 10px 16px;
+  min-height: 36px;
   background: ${props => props.variant === 'danger' ? '#fff' : '#f8f9fa'};
   color: ${props => 
     props.variant === 'primary' ? '#2196f3' :
@@ -58,6 +61,7 @@ const ActionButton = styled.button<{ variant: 'primary' | 'success' | 'danger' }
   font-weight: 500;
   transition: all 0.2s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  line-height: 1;
 
   &:hover {
     background: ${props => 
@@ -76,29 +80,6 @@ const ActionButton = styled.button<{ variant: 'primary' | 'success' | 'danger' }
   svg {
     font-size: 18px;
     color: inherit;
-  }
-`;
-
-const TemplateSelect = styled.select`
-  padding: 8px 30px 8px 12px;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
-  min-width: 200px;
-  appearance: none;
-  background: white;
-  font-size: 14px;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-
-  &:hover {
-    border-color: #2196f3;
-    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.1);
-  }
-
-  &:focus {
-    outline: none;
-    border-color: #2196f3;
-    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
   }
 `;
 
@@ -319,18 +300,21 @@ export const App: React.FC = () => {
           Расписание занятий
         </h1>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-          <div style={{ position: 'relative' }}>
-            <TemplateSelect 
-              value={currentTemplateId} 
+          <div style={{ position: 'relative', minWidth: '200px' }}>
+            <SelectNative
+              id="template-select"
+              value={currentTemplateId}
               onChange={handleTemplateChange}
+              style={{ fontWeight: 600 }}
             >
               {templates.map(template => (
                 <option key={template.id} value={template.id}>
                   {template.name}
                 </option>
               ))}
-            </TemplateSelect>
-            {editingTemplateId === currentTemplateId ? (
+            </SelectNative>
+            
+            {editingTemplateId === currentTemplateId && (
               <input
                 value={editedTemplateName}
                 onChange={(e) => setEditedTemplateName(e.target.value)}
@@ -345,11 +329,12 @@ export const App: React.FC = () => {
                   padding: '8px 12px',
                   border: '2px solid #2196f3',
                   borderRadius: '8px',
-                  boxSizing: 'border-box'
+                  boxSizing: 'border-box',
+                  fontWeight: 600
                 }}
                 autoFocus
               />
-            ) : null}
+            )}
           </div>
 
           <ActionButton 

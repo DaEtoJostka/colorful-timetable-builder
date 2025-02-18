@@ -65,55 +65,64 @@ const OptionIndicator = styled.span<{ color: string }>`
 `;
 
 const Button = styled.button`
-  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  min-height: 36px;
   background: #2196f3;
   color: white;
-  border: none;
-  border-radius: 4px;
+  border: 1px solid #2196f3;
+  border-radius: 8px;
   cursor: pointer;
+  font-size: 14px;
   font-weight: 500;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  line-height: 1;
 
   &:hover {
     background: #1976d2;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   }
 
   &:disabled {
     background: #ccc;
+    border-color: #ccc;
     cursor: not-allowed;
+    transform: none;
   }
 `;
 
-const DeleteButton = styled.button`
-  padding: 10px 20px;
-  background: #fff;
-  color: #f44336;
+const DeleteButton = styled(Button)`
+  background: #f44336;
+  color: white;
   border: 1px solid #f44336;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.2s;
   margin-left: auto;
 
   &:hover {
-    background: #ffebee;
+    background: #d32f2f;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
 `;
 
-// Add new button style
-const DuplicateButton = styled.button`
-  padding: 10px 20px;
+const DuplicateButton = styled(Button)`
   background: #4CAF50;
   color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background 0.2s;
+  border: 1px solid #4CAF50;
   margin-left: auto;
 
   &:hover {
     background: #45a049;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
 `;
 
@@ -322,7 +331,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({
                 Дублировать
               </DuplicateButton>
               <DeleteButton type="button" onClick={onDelete}>
-                Удалить занятие
+                Удалить
               </DeleteButton>
             </>
           )}
