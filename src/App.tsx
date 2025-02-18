@@ -211,9 +211,14 @@ export const App: React.FC = () => {
   const handleSubmit = (course: Course) => {
     setTemplates(prev => prev.map(template => {
       if (template.id === currentTemplateId) {
-        const courses = selectedCourse
-          ? template.courses.map(c => c.id === selectedCourse.id ? course : c)
-          : [...template.courses, course];
+        const isDuplicate = selectedCourse && course.id !== selectedCourse.id;
+        
+        const courses = isDuplicate 
+          ? [...template.courses, course] 
+          : selectedCourse
+            ? template.courses.map(c => c.id === selectedCourse.id ? course : c)
+            : [...template.courses, course];
+            
         return { ...template, courses };
       }
       return template;
@@ -245,8 +250,12 @@ export const App: React.FC = () => {
 
   const deleteCurrentTemplate = () => {
     if (templates.length > 1) {
-      setTemplates(prev => prev.filter(t => t.id !== currentTemplateId));
-      setCurrentTemplateId(templates[0].id);
+      setTemplates(prev => {
+        const updatedTemplates = prev.filter(t => t.id !== currentTemplateId);
+        const newCurrentId = updatedTemplates[0]?.id || 'default';
+        setCurrentTemplateId(newCurrentId);
+        return updatedTemplates;
+      });
     }
   };
 

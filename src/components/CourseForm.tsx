@@ -100,6 +100,23 @@ const DeleteButton = styled.button`
   }
 `;
 
+// Add new button style
+const DuplicateButton = styled.button`
+  padding: 10px 20px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+  margin-left: auto;
+
+  &:hover {
+    background: #45a049;
+  }
+`;
+
 // Создадим объект с цветами для типов занятий
 const TYPE_COLORS = {
   lecture: '#ef5350',
@@ -161,6 +178,7 @@ interface CourseFormProps {
   onSubmit: (course: Course) => void;
   onCancel: () => void;
   onDelete?: () => void;
+  onDuplicate?: () => void;
 }
 
 export const CourseForm: React.FC<CourseFormProps> = ({
@@ -170,6 +188,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({
   onSubmit,
   onCancel,
   onDelete,
+  onDuplicate,
 }) => {
   const [formData, setFormData] = useState<Partial<Course>>({
     title: '',
@@ -289,9 +308,23 @@ export const CourseForm: React.FC<CourseFormProps> = ({
             Отмена
           </Button>
           {course && (
-            <DeleteButton type="button" onClick={onDelete}>
-              Удалить занятие
-            </DeleteButton>
+            <>
+              <DuplicateButton 
+                type="button" 
+                onClick={() => {
+                  const newCourse = {
+                    ...formData,
+                    id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+                  };
+                  onSubmit(newCourse as Course);
+                }}
+              >
+                Дублировать
+              </DuplicateButton>
+              <DeleteButton type="button" onClick={onDelete}>
+                Удалить занятие
+              </DeleteButton>
+            </>
           )}
         </div>
       </Form>
