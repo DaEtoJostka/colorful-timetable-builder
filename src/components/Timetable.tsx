@@ -13,10 +13,10 @@ const TimetableContainer = styled.div`
   border-radius: 8px;
   border: 1px solid #e0e0e0;
   margin: 0 -15px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 
   @media (min-width: 768px) {
     margin: 0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   }
 `;
 
@@ -26,6 +26,7 @@ const Header = styled.div`
   background: #fff;
   border-bottom: 1px solid #e0e0e0;
   min-width: 800px;
+  border-right: 1px solid #e0e0e0;
 `;
 
 const HeaderCell = styled.div`
@@ -84,6 +85,11 @@ const CoursesContainer = styled.div`
   min-height: 100px;
   position: relative;
   transition: padding-bottom 0.2s ease-in-out;
+  border-right: 1px solid #e0e0e0;
+
+  &:last-child {
+    border-right: none;
+  }
 
   &:hover {
     background: #f8f8f8;
