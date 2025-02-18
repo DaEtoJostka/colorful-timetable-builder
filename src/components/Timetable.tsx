@@ -7,55 +7,71 @@ import styled from 'styled-components';
 import { CourseBlock } from './CourseBlock';
 
 const TimetableContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  background: #f5f5f5;
-  padding: 20px;
+  overflow-x: auto;
+  padding: 0;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  margin: 0 -15px;
+
+  @media (min-width: 768px) {
+    margin: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
 `;
 
 const Header = styled.div`
   display: grid;
-  grid-template-columns: 100px repeat(6, 1fr);
-  gap: 1px;
+  grid-template-columns: 100px repeat(6, minmax(120px, 1fr));
   background: #fff;
-  margin-bottom: 10px;
+  border-bottom: 1px solid #e0e0e0;
+  min-width: 800px;
 `;
 
 const HeaderCell = styled.div`
-  padding: 10px;
-  background: #fff;
-  text-align: center;
-  font-weight: bold;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2d3748;
+  background: #f8f9fa;
+  border-right: 1px solid #e0e0e0;
+  line-height: 1.4;
+  text-align: left;
+
+  &:last-child {
+    border-right: none;
+  }
 `;
 
 const TimeSlotRow = styled.div`
   display: grid;
-  grid-template-columns: 100px repeat(6, 1fr);
-  gap: 1px;
-  margin-bottom: 1px;
+  grid-template-columns: 100px repeat(6, minmax(120px, 1fr));
+  min-width: 800px;
+  border-bottom: 1px solid #e0e0e0;
+
+  &:last-child {
+    border-bottom: none;
+  }
 `;
 
 const TimeCell = styled.div`
-  padding: 10px;
-  background: #fff;
-  text-align: center;
-  font-size: 0.9em;
-  color: #666;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #4a5568;
+  background: #f8f9fa;
+  border-right: 1px solid #e0e0e0;
+  
   .start-time {
-    font-weight: bold;
+    display: block;
+    font-weight: 600;
+    color: #2d3748;
     margin-bottom: 2px;
-    color: #333;
   }
 
   .end-time {
-    font-size: 0.9em;
-    color: #666;
+    display: block;
+    font-size: 12px;
+    color: #718096;
   }
 `;
 
@@ -85,7 +101,7 @@ const CoursesContainer = styled.div`
 `;
 
 const CourseCell = styled.div<{ type: string }>`
-  padding: 8px;
+  padding: 10px 16px;
   background: ${props => 
     props.type === 'lecture' ? '#ffebee' :
     props.type === 'lab' ? 'rgba(19, 164, 236, 0.1)' :
@@ -98,15 +114,25 @@ const CourseCell = styled.div<{ type: string }>`
     props.type === 'practice' ? 'rgb(19, 109, 236)' :
     props.type === 'exam' ? '#ff9800' :
     '#ab47bc'};
+  margin: 4px;
   border-radius: 4px;
   cursor: pointer;
-  transition: all 0.2s;
-  font-size: 0.9em;
-  z-index: 1;
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-right: 1px solid #e0e0e0;
 
   &:hover {
-    transform: scale(1.02);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transform: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  @media (min-width: 768px) {
+    white-space: normal;
+    -webkit-line-clamp: 3;
   }
 `;
 
@@ -129,6 +155,18 @@ const AddButton = styled.button`
 
   &:hover {
     background: #d0d0d0;
+  }
+`;
+
+const MobileOnly = styled.div`
+  display: none;
+  @media (max-width: 767px) {
+    display: block;
+    padding: 10px;
+    background: #fff;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    font-weight: bold;
   }
 `;
 
@@ -183,6 +221,7 @@ export const Timetable: React.FC<TimetableProps> = ({
   return (
     <DndProvider backend={HTML5Backend}>
       <TimetableContainer>
+        <MobileOnly>Прокрутите вправо для просмотра расписания →</MobileOnly>
         <Header>
           <HeaderCell>Время</HeaderCell>
           {days.map((day, index) => (
